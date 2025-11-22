@@ -1,0 +1,5 @@
+{
+  "name": "ShowStream Manager",
+  "description": "A full-stack capable media management application for TV shows, cast, crew, and production details with Gemini AI integration for content generation.",
+  "requestFramePermissions": []
+}
