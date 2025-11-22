@@ -47,7 +47,12 @@ const USER_HASH = "04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df
 class MockDatabase {
   private get<T>(key: string): T[] {
     const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : [];
+    try {
+        return data ? JSON.parse(data) : [];
+    } catch (e) {
+        console.error("Error parsing DB data", e);
+        return [];
+    }
   }
 
   private set<T>(key: string, data: T[]) {
@@ -113,13 +118,21 @@ class MockDatabase {
 
   getAllUsers(): User[] {
     const users = this.get<any>('users');
-    // Return only public info
-    return users.map(u => ({ username: u.username, role: u.role }));
+    // Return only public info, ensure role exists and user is valid
+    return users
+        .filter(u => u && u.username) 
+        .map(u => ({ username: u.username, role: u.role || UserRole.USER }));
   }
 
   deleteUser(username: string) {
     const users = this.get<any>('users');
-    const newUsers = users.filter(u => u.username !== username);
+    // Filter out the user. Use optional chaining to handle potential corrupt data.
+    const newUsers = users.filter(u => u?.username !== username);
+    
+    if (newUsers.length === users.length) {
+        console.warn(`User ${username} not found to delete.`);
+    }
+    
     this.set('users', newUsers);
   }
 
@@ -129,6 +142,8 @@ class MockDatabase {
     if (idx !== -1) {
       users[idx].role = newRole;
       this.set('users', users);
+    } else {
+        throw new Error("User not found");
     }
   }
 

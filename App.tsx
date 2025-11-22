@@ -59,9 +59,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <span>Crew Registry</span>
           </Link>
           
+          {/* Admin Only Navigation */}
           {user.role === UserRole.ADMIN && (
               <>
                 <div className="my-4 border-t border-slate-800"></div>
+                <div className="px-4 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  Admin
+                </div>
                 <Link to="/admin/users" className={navClass('/admin/users')}>
                   <ShieldCheck size={20} />
                   <span>User Management</span>
